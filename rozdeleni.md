@@ -1,3 +1,3 @@
 # Rozdělení bodů
-Jmeno Prijemni 100
-Jmeno Prijemni 100
+Jan Havlíček 100
+Jan Buliř 100
