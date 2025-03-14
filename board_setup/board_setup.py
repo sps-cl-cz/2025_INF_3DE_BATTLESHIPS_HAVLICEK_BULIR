@@ -20,10 +20,9 @@ class BoardSetup:
         return self.board
 
     def get_tile(self, x: int, y: int) -> int:
-        if 0 <= y < self.rows and 0 <= x < self.cols:
-            return self.board[y][x]
-        else:
-            raise IndexError("Coordinates out of bounds.")
+        if not (0 <= x < self.cols and 0 <= y < self.rows):
+            raise IndexError(f"Coordinates out of bounds: ({x}, {y})")
+        return self.board[y][x]
 
     def place_ships(self) -> None:
         """
@@ -33,7 +32,8 @@ class BoardSetup:
         for ship_id, count in self.ships_dict.items():
             for _ in range(count):
                 placed = False
-                while not placed:
+                attempts = 0
+                while not placed and attempts < 100:
                     x = random.randint(0, self.cols - 1)
                     y = random.randint(0, self.rows - 1)
 
@@ -52,6 +52,11 @@ class BoardSetup:
                                 for i in range(length):
                                     self.board[y + i][x] = ship_id
                                 placed = True
+
+                    attempts += 1
+
+                if not placed:
+                    raise RuntimeError(f"Failed to place ship ID={ship_id} after 100 attempts.")
 
     def _place_l_shape(self, x, y, ship_id) -> bool:
         """
@@ -79,6 +84,9 @@ class BoardSetup:
         self.attacked_positions.clear()
 
     def attack(self, x: int, y: int) -> int:
+        if not (0 <= x < self.cols and 0 <= y < self.rows):
+            raise ValueError(f"Attack out of bounds: ({x}, {y})")
+
         if (x, y) in self.attacked_positions:
             raise ValueError(f"Position ({x}, {y}) has already been attacked.")
 
